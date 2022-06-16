@@ -138,7 +138,7 @@ body{
 
 .tooltip .tooltiptextnobg {
   visibility: hidden;
-  width: 200px;
+  width: 20px;
   color: #fff;
   text-align: center;
   border-radius: 6px;
