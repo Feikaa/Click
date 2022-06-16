@@ -44,7 +44,7 @@ function loop() {
                 img.src = "0hitsplat.png"
             }
             else {
-                var hit = Math.round(Math.random() * str + 1) * 4
+                var hit = 400
                 dmg.innerHTML = hit / 4;
                 img.src = "Damage_hitsplat.png"
                 strxp += hit
@@ -175,12 +175,12 @@ function flicker(){
   
 function rollLoot() {
     if (items.length < 20)
-    var regular = Math.floor(Math.random() * 100);
+    var regular = Math.floor(Math.random() * 20);
     var rare = Math.floor(Math.random() * 1000);
 
-    if (regular == 0) {
+    if (true) {
         var drop = Math.floor(Math.random() * 4);
-        if (drop == 0 && !rune_scim_drop) {
+        if (!rune_scim_drop) {
             const alert = document.createElement('p');
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
             document.getElementById('chatbox').appendChild(alert);
@@ -194,13 +194,24 @@ function rollLoot() {
             icon.height = 50;
             rune_scim.style.position = 'absolute';
             rune_scim.style.top = 0 + (60 * Math.floor((items.length / 5))) + 'px';
-            rune_scim.style.left = 0 + (60 * (items.length % 5)) + 'px';
+            rune_scim.style.left = 0 + (60 * (items.length % 5)) + 'px';    
+            rune_scim.addEventListener('click', function handleClick(event) {
+                if (main != rune_scim) {
+                    unequipMain();
+                    equip(rune_scim);
+                    updateInv();
+                } else {
+                    unequipMain();
+                    updateInv();
+                }
+            })
             const hover = document.createElement("span")
+            hover.id = "hover";
             hover.className = "tooltiptextnobg"
             hover.innerHTML = "Equip"
             hover.style.top = '20px'
             hover.style.left = '-70px'
-            rune_scim.appendChild(hover)    
+            rune_scim.appendChild(hover)
             items.push(rune_scim);
             updateInv();
             rune_scim_drop = true;
@@ -209,7 +220,23 @@ function rollLoot() {
 }
 
 function updateInv() {
+    document.getElementById('inventory').innerHTML = "";
     for (const item of items) {
         document.getElementById('inventory').appendChild(item);
+        hover.innerHTML = "Equip"
     }
+}
+
+function unequipMain() {
+    if (main != null) {
+        items.push(main);
+        main = null;
+    }
+}
+
+function equip(item) {
+    main = item 
+    items.splice(items.indexOf(item), 1)
+    document.body.appendChild(item)
+    hover.innerHTML = "Unequip"
 }
