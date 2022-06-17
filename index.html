@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuneIdle</title>
     <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="./Item.js"></script>
     <script>
         var on = false;
         if (localStorage.getItem("atk") != null) {
@@ -22,7 +23,6 @@
           var atkxp = 0;
           var atkxp_calc = 0;
         }
-        console.log(localStorage.getItem("str"))
         if (localStorage.getItem("str") != null) {
           var str = JSON.parse(localStorage.getItem("str"))
           var strtemp = str
@@ -37,9 +37,12 @@
           var strxp = 0;
           var strxp_calc = 0;
         }
-        console.log(JSON.parse(localStorage.getItem("inv")))
         if (localStorage.getItem("inv") != null) {
-          var items = JSON.parse(localStorage.getItem("inv"))
+          var items = []
+          var inv = JSON.parse(localStorage.getItem("inv"))
+          for (let i = 0; i < inv.length; i++) {
+            items.push(new Item(inv[i]))
+          }
         } else {
           var items = [];
         }
@@ -108,7 +111,6 @@
         
       </div>
 
-    <script src="./RuneScim.js"></script>
     <script src="./script.js"></script>
     <script src="./attacking.js"></script>
 

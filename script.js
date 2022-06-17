@@ -11,6 +11,9 @@ document.getElementById('btn').addEventListener("click", () => {
 document.getElementById("attackstyle").addEventListener("change", () => {
     changestyle();
 })
+updateInv();
+strXP();
+atkXP();
 var checkbox = document.getElementById("attackstyle")
 
 function changestyle() {
@@ -242,9 +245,7 @@ function rollLoot() {
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
             document.getElementById('chatbox').appendChild(alert);
             setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            runeScim = new RuneScim(document.createElement('div'), document.createElement('img'), document.createElement("span"));
-
-            items.push(runeScim.rune_scim);
+            items.push(new Item("rune_scim"));
             updateInv();
             rune_scim_drop = true;
         }
@@ -369,11 +370,11 @@ function rollLoot() {
 
 function updateInv() {
     document.getElementById('inventory').innerHTML = "";
-    for (const item of items) {
-        item.style.top = 0 + (60 * Math.floor(((items.indexOf(item) + 1) / 5))) + 'px';
-        item.style.left = 0 + (60 * ((items.indexOf(item)) % 5)) + 'px';    
-        document.getElementById('inventory').appendChild(item);
-        item.childNodes[1].innerHTML = "Equip"
+    for (let i = 0; i < items.length; i++) {
+        items[i].item.style.top = 0 + (60 * Math.floor((i + 1) / 5)) + 'px';
+        items[i].item.style.left = 0 + (60 * (i % 5)) + 'px';    
+        document.getElementById('inventory').appendChild(items[i].item);
+        items[i].hover.innerHTML = "Equip"
         save()
     }
 }
@@ -395,10 +396,10 @@ function unequipOff() {
 function equip(item) {
     main = item 
     items.splice(items.indexOf(item), 1)
-    document.body.appendChild(item)
-    item.childNodes[1].innerHTML = "Unequip"
-    item.style.top = '0px';
-    item.style.left = '0px';
+    document.body.appendChild(item.item)
+    item.hover.innerHTML = "Unequip"
+    item.item.style.top = '0px';
+    item.item.style.left = '0px';
 }
 
 function equipOff(item) {
@@ -411,8 +412,11 @@ function equipOff(item) {
 }
 
 function save() {
-    console.log(items)
-    localStorage.setItem('inv', items)
+    var inv = []
+    for (let i = 0; i < items.length; i++) {
+        inv.push(items[i].item.id)
+    }
+    localStorage.setItem('inv', JSON.stringify(inv))
     localStorage.setItem('str', JSON.stringify(str))
     localStorage.setItem('strxp', JSON.stringify(strxp))
     localStorage.setItem('strxp_calc', JSON.stringify(strxp_calc))
