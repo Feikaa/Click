@@ -7,10 +7,9 @@ document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (
 document.getElementById('btn').addEventListener("click", () => {
     on = !on;
     iterate();
-})
+}, {once: true})
 document.getElementById("attackstyle").addEventListener("change", () => {
     changestyle();
-    iterate();
 })
 var checkbox = document.getElementById("attackstyle")
 
@@ -20,7 +19,6 @@ function changestyle() {
     } else {
         document.getElementById("attackstyletext").innerHTML = "Attack"
     }
-    on = false
 }
 
 function iterate() {
@@ -47,6 +45,10 @@ function loop() {
             if (main.id == "rune_scim") {
                 strtemp += 3
             }
+            else if (main.id == "rune_hasta") {
+                atktemp += 1
+                strtemp += 1
+            }
         }
         if (checkbox.checked) {
             const dmg = document.createElement("div");
@@ -57,13 +59,27 @@ function loop() {
             }
             else {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
+                if (main != null) {
+                    if (main.id == "rune_claw") {
+                        hit = Math.round(hit * 1.5);
+                    } else if (main.id == "rune_hasta") {
+                        hit = Math.round(hit / 4)
+                    }
+                }
                 dmg.innerHTML = Math.round(hit / 4);
                 img.src = "Damage_hitsplat.png"
                 strxp += hit
                 strxp_calc += hit
                 document.getElementById("strengthxp").innerHTML = strxp
                 document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
-
+                if (main != null) {
+                    if (main.id == "rune_hasta") {
+                        atkxp += hit
+                        atkxp_calc += hit
+                        document.getElementById("attackxp").innerHTML = atkxp
+                        document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+                    }
+                }
             }
             var height = 130;
             var width = 800;
@@ -84,6 +100,11 @@ function loop() {
                 dmg.style.textAlign = "center";
                 document.body.appendChild(dmg);
                 strXP()
+                if (main != null) {
+                    if (main.id == "rune_hasta") {
+                        atkXP()
+                    }
+                }
                 setTimeout(() => document.body.removeChild(dmg), 1000)
                 $("#enemyhp").css("width",($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100) - (hit/4) + "%",100);
                 if ($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100 <= 0) {
@@ -105,12 +126,27 @@ function loop() {
             }
             else {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
+                if (main != null) {
+                    if (main.id == "rune_claw") {
+                        hit = Math.round(hit * 1.5);
+                    } else if (main.id == "rune_hasta") {
+                        hit = Math.round(hit / 4)
+                    }
+                }
                 dmg.innerHTML = Math.round(hit / 4);
                 img.src = "Damage_hitsplat.png"
                 atkxp += hit
                 atkxp_calc += hit
                 document.getElementById("attackxp").innerHTML = atkxp
                 document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+                if (main != null) {
+                    if (main.id == "rune_hasta") {
+                        strxp += hit
+                        strxp_calc += hit
+                        document.getElementById("strengthxp").innerHTML = strxp
+                        document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+                    }
+                }
             }
             var height = 130;
             var width = 800;
@@ -132,6 +168,11 @@ function loop() {
                 document.body.appendChild(dmg);
                 $("#enemyhp").css("width",($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100) - (hit/4) + "%",100);
                 atkXP()
+                if (main != null) {
+                    if (main.id == "rune_hasta") {
+                        strXP()
+                    }
+                }
                 setTimeout(() => document.body.removeChild(dmg), 1000)  
                 if ($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100 <= 0) {
                     rollLoot();
@@ -147,7 +188,7 @@ function loop() {
             atk += 1
             document.getElementById("attack").innerHTML = atk
             atkxp_calc = 0
-            document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - strxp_calc
+            document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
         }
         if (strxp_calc >= (1/4 * Math.floor(str + 300 * (Math.pow(2, (str) / 7))))) {
             str += 1
@@ -249,6 +290,9 @@ function rollLoot() {
                 if (offhand != rune_def) {
                     unequipOff();
                     equipOff(rune_def);
+                    if (main != null && main.id == "rune_claw") {
+                        unequipMain();
+                    }
                     updateInv();
                 } else {
                     unequipOff();
@@ -266,6 +310,81 @@ function rollLoot() {
             updateInv();
             rune_defender_drop = true;
         }
+        else if (drop == 2 && !rune_claw_drop) {
+            const alert = document.createElement('p');
+            alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Claws</p>"
+            document.getElementById('chatbox').appendChild(alert);
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 5000)
+            const rune_claw = document.createElement('div');
+            const icon = document.createElement('img');
+            rune_claw.appendChild(icon)
+            rune_claw.className = "tooltip"
+            rune_claw.id = "rune_claw"
+            icon.src = "Rune_claws.png";
+            icon.width = 50;
+            icon.height = 50;
+            rune_claw.style.position = 'absolute';
+            rune_claw.style.top = 0 + (60 * Math.floor((items.length / 5))) + 'px';
+            rune_claw.style.left = 0 + (60 * (items.length % 5)) + 'px';    
+            rune_claw.addEventListener('click', function handleClick(event) {
+                if (main != rune_claw) {
+                    unequipMain();
+                    unequipOff();
+                    equip(rune_claw);
+                    updateInv();
+                } else {
+                    unequipMain();
+                    updateInv();
+                }
+            })
+            const hover = document.createElement("span")
+            hover.id = "hover";
+            hover.className = "tooltiptextnobg"
+            hover.innerHTML = "Equip"
+            hover.style.top = '20px'
+            hover.style.left = '5px'
+            rune_claw.appendChild(hover)
+            items.push(rune_claw);
+            updateInv();
+            rune_claw_drop = true;
+        }
+        else if (drop == 3 && !rune_hasta_drop) {
+            const alert = document.createElement('p');
+            alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Hasta</p>"
+            document.getElementById('chatbox').appendChild(alert);
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 5000)
+            const rune_hasta = document.createElement('div');
+            const icon = document.createElement('img');
+            rune_hasta.appendChild(icon)
+            rune_hasta.className = "tooltip"
+            rune_hasta.id = "rune_hasta"
+            icon.src = "Rune_hasta.png";
+            icon.width = 50;
+            icon.height = 50;
+            rune_hasta.style.position = 'absolute';
+            rune_hasta.style.top = 0 + (60 * Math.floor((items.length / 5))) + 'px';
+            rune_hasta.style.left = 0 + (60 * (items.length % 5)) + 'px';    
+            rune_hasta.addEventListener('click', function handleClick(event) {
+                if (main != rune_hasta) {
+                    unequipMain();
+                    equip(rune_hasta);
+                    updateInv();
+                } else {
+                    unequipMain();
+                    updateInv();
+                }
+            })
+            const hover = document.createElement("span")
+            hover.id = "hover";
+            hover.className = "tooltiptextnobg"
+            hover.innerHTML = "Equip"
+            hover.style.top = '20px'
+            hover.style.left = '5px'
+            rune_hasta.appendChild(hover)
+            items.push(rune_hasta);
+            updateInv();
+            rune_hasta_drop = true;
+        }
     }
 }
 }
@@ -273,8 +392,10 @@ function rollLoot() {
 function updateInv() {
     document.getElementById('inventory').innerHTML = "";
     for (const item of items) {
+        item.style.top = 0 + (60 * Math.floor(((items.indexOf(item) + 1) / 5))) + 'px';
+        item.style.left = 0 + (60 * ((items.indexOf(item)) % 5)) + 'px';    
         document.getElementById('inventory').appendChild(item);
-        hover.innerHTML = "Equip"
+        item.childNodes[1].innerHTML = "Equip"
     }
 }
 
@@ -296,12 +417,16 @@ function equip(item) {
     main = item 
     items.splice(items.indexOf(item), 1)
     document.body.appendChild(item)
-    hover.innerHTML = "Unequip"
+    item.childNodes[1].innerHTML = "Unequip"
+    item.style.top = '0px';
+    item.style.left = '0px';
 }
 
 function equipOff(item) {
     offhand = item
     items.splice(items.indexOf(item), 1)
     document.body.appendChild(item)
-    hover.innerHTML = "Unequip"
+    item.childNodes[1].innerHTML = "Unequip"
+    item.style.top = '0px';
+    item.style.left = '60px';
 }
