@@ -126,6 +126,7 @@ function loop() {
             }
             else {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
+                hit = 400
                 if (main != null) {
                     if (main.id == "rune_claw") {
                         hit = Math.round(hit * 1.5);
@@ -159,7 +160,7 @@ function loop() {
             img.style.left = width + 'px';
             if (chance != 0) {
                 dmg.style.fontSize = "x-large";
-                dmg.style.position = 'absolute';
+                dmg.style.position = 'fixed';
                 dmg.style.zIndex = 1;
                 dmg.style.color = "white";
                 dmg.style.top = heighttext + 'px';
@@ -196,6 +197,7 @@ function loop() {
             strxp_calc = 0
             document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
         }
+        save()
         setTimeout(loop, 1200)
     }
 }
@@ -230,43 +232,19 @@ function rollLoot() {
     if (items.length < 20) {
     var regular = Math.floor(Math.random() * 20);
     var rare = Math.floor(Math.random() * 1000);
+    regular = 0
 
     if (regular == 0) {
         var drop = Math.floor(Math.random() * 4);
+        drop = 0
         if (drop == 0 && !rune_scim_drop) {
             const alert = document.createElement('p');
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
             document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 5000)
-            const rune_scim = document.createElement('div');
-            const icon = document.createElement('img');
-            rune_scim.appendChild(icon)
-            rune_scim.className = "tooltip"
-            rune_scim.id = "rune_scim"
-            icon.src = "Rune_scimitar.png";
-            icon.width = 50;
-            icon.height = 50;
-            rune_scim.style.position = 'absolute';
-            rune_scim.style.top = 0 + (60 * Math.floor((items.length / 5))) + 'px';
-            rune_scim.style.left = 0 + (60 * (items.length % 5)) + 'px';    
-            rune_scim.addEventListener('click', function handleClick(event) {
-                if (main != rune_scim) {
-                    unequipMain();
-                    equip(rune_scim);
-                    updateInv();
-                } else {
-                    unequipMain();
-                    updateInv();
-                }
-            })
-            const hover = document.createElement("span")
-            hover.id = "hover";
-            hover.className = "tooltiptextnobg"
-            hover.innerHTML = "Equip"
-            hover.style.top = '20px'
-            hover.style.left = '5px'
-            rune_scim.appendChild(hover)
-            items.push(rune_scim);
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+            runeScim = new RuneScim(document.createElement('div'), document.createElement('img'), document.createElement("span"));
+
+            items.push(runeScim.rune_scim);
             updateInv();
             rune_scim_drop = true;
         }
@@ -274,7 +252,7 @@ function rollLoot() {
             const alert = document.createElement('p');
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Defender</p>"
             document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 5000)
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
             const rune_def = document.createElement('div');
             const icon = document.createElement('img');
             rune_def.appendChild(icon)
@@ -314,7 +292,7 @@ function rollLoot() {
             const alert = document.createElement('p');
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Claws</p>"
             document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 5000)
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
             const rune_claw = document.createElement('div');
             const icon = document.createElement('img');
             rune_claw.appendChild(icon)
@@ -352,7 +330,7 @@ function rollLoot() {
             const alert = document.createElement('p');
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Hasta</p>"
             document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 5000)
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
             const rune_hasta = document.createElement('div');
             const icon = document.createElement('img');
             rune_hasta.appendChild(icon)
@@ -396,6 +374,7 @@ function updateInv() {
         item.style.left = 0 + (60 * ((items.indexOf(item)) % 5)) + 'px';    
         document.getElementById('inventory').appendChild(item);
         item.childNodes[1].innerHTML = "Equip"
+        save()
     }
 }
 
@@ -429,4 +408,17 @@ function equipOff(item) {
     item.childNodes[1].innerHTML = "Unequip"
     item.style.top = '0px';
     item.style.left = '60px';
+}
+
+function save() {
+    console.log(items)
+    localStorage.setItem('inv', items)
+    localStorage.setItem('str', JSON.stringify(str))
+    localStorage.setItem('strxp', JSON.stringify(strxp))
+    localStorage.setItem('strxp_calc', JSON.stringify(strxp_calc))
+    localStorage.setItem('atk', JSON.stringify(atk))
+    localStorage.setItem('atkxp', JSON.stringify(atkxp))
+    localStorage.setItem('atkxp_calc', JSON.stringify(atkxp_calc))
+    localStorage.setItem('rune_drops', JSON.stringify([rune_scim_drop, rune_defender_drop, rune_claw_drop, rune_hasta_drop]))
+    localStorage.setItem('equipped', JSON.stringify([main, offhand]))
 }

@@ -8,27 +8,66 @@
     <link href="style.css" rel="stylesheet" type="text/css">
     <script>
         var on = false;
-        var atk = 1;
-        var atktemp = 1;
-        var atkxp = 0;
-        var atkxp_calc = 0;
-        var str = 1;
-        var strtemp = 1;
-        var strxp = 0;
-        var strxp_calc = 0;
-        var items = [];
-        var rune_scim_drop = false;
-        var rune_defender_drop = false;
-        var rune_claw_drop = false;
-        var rune_hasta_drop = false;
-        var main = null;
-        var offhand = null;
+        if (localStorage.getItem("atk") != null) {
+          var atk = JSON.parse(localStorage.getItem('atk'))
+          var atktemp = atk
+        } else {
+          var atk = 1;
+          var atktemp = 1;
+        }
+        if (localStorage.getItem("atkxp") != null) {
+          var atkxp = JSON.parse(localStorage.getItem("atkxp"))
+          var atkxp_calc = JSON.parse(localStorage.getItem("atkxp_calc"))
+        } else {
+          var atkxp = 0;
+          var atkxp_calc = 0;
+        }
+        console.log(localStorage.getItem("str"))
+        if (localStorage.getItem("str") != null) {
+          var str = JSON.parse(localStorage.getItem("str"))
+          var strtemp = str
+        } else {
+          var str = 1;
+          var strtemp = 1;
+        }
+        if (localStorage.getItem("strxp") != null) {
+          var strxp = JSON.parse(localStorage.getItem("strxp"))
+          var strxp_calc = JSON.parse(localStorage.getItem("strxp_calc"))
+        } else {
+          var strxp = 0;
+          var strxp_calc = 0;
+        }
+        console.log(JSON.parse(localStorage.getItem("inv")))
+        if (localStorage.getItem("inv") != null) {
+          var items = JSON.parse(localStorage.getItem("inv"))
+        } else {
+          var items = [];
+        }
+        if (localStorage.getItem("rune_drops") != null) {
+          var rune_scim_drop = JSON.parse(localStorage.getItem("rune_drops"))[0]
+          var rune_defender_drop = JSON.parse(localStorage.getItem("rune_drops"))[1]
+          var rune_claw_drop = JSON.parse(localStorage.getItem("rune_drops"))[2]
+          var rune_hasta_drop = JSON.parse(localStorage.getItem("rune_drops"))[3]
+        } else {
+          var rune_scim_drop = false;
+          var rune_defender_drop = false;
+          var rune_claw_drop = false;
+          var rune_hasta_drop = false;
+        }
+        if (localStorage.getItem("equipped") != null) {
+          var main = JSON.parse(localStorage.getItem("equipped"))[0]
+          var offhand = JSON.parse(localStorage.getItem("equipped"))[1]
+        } else {
+          var main = null;
+          var offhand = null;
+        }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
     <div class="centered">
         <h1>RuneIdle</h1>   
+        <button type="button" onclick="localStorage.clear(); location.reload()">Reset</button>
         <div class="meter green nostripes" style="width:500px">
           <span style="width:100%" id="enemyhp"></span>
         </div>
@@ -69,6 +108,7 @@
         
       </div>
 
+    <script src="./RuneScim.js"></script>
     <script src="./script.js"></script>
     <script src="./attacking.js"></script>
 
