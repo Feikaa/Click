@@ -131,6 +131,7 @@ function loop() {
             }
             else {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
+                hit = 400
                 if (main != null) {
                     if (main.item.id == "rune_claw") {
                         hit = Math.round(hit * 1.5);
@@ -238,6 +239,7 @@ function rollLoot() {
     if (items.length < 20) {
     var regular = Math.floor(Math.random() * 20);
     var rare = Math.floor(Math.random() * 1000);
+    regular = 0
 
     if (regular == 0) {
         var drop = Math.floor(Math.random() * 4);
@@ -246,7 +248,7 @@ function rollLoot() {
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
             document.getElementById('chatbox').appendChild(alert);
             setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_scim", "main"));
+            items.push(new Item("rune_scim", "main", 20));
             updateInv();
             rune_scim_drop = true;
         }
@@ -255,7 +257,7 @@ function rollLoot() {
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Defender</p>"
             document.getElementById('chatbox').appendChild(alert);
             setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_def", "off"));
+            items.push(new Item("rune_def", "off", 20));
             updateInv();
             rune_defender_drop = true;
         }
@@ -264,7 +266,7 @@ function rollLoot() {
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Claws</p>"
             document.getElementById('chatbox').appendChild(alert);
             setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_claw", "both"));
+            items.push(new Item("rune_claw", "both", 40));
             updateInv();
             rune_claw_drop = true;
         }
@@ -273,7 +275,7 @@ function rollLoot() {
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Hasta</p>"
             document.getElementById('chatbox').appendChild(alert);
             setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_hasta", "main"));
+            items.push(new Item("rune_hasta", "main", 30));
             updateInv();
             rune_hasta_drop = true;
         }
@@ -332,10 +334,10 @@ function loadHands() {
     if (localStorage.getItem("equipped") != null) {
         var toEquip = JSON.parse(localStorage.getItem("equipped"))
         if (toEquip[0].length > 0) {
-          equip(new Item(toEquip[0][0], toEquip[0][1]));
+          equip(new Item(toEquip[0][0], toEquip[0][1], toEquip[0][2]));
         }
-        if (toEquip[1] != "") {
-          equipOff(new Item(toEquip[1], "off"))
+        if (toEquip[1].length > 0) {
+          equipOff(new Item(toEquip[1][0], "off", toEquip[1][1]))
         }
       }
     if (localStorage.getItem("hp") != null) {
@@ -346,18 +348,18 @@ function loadHands() {
 function save() {
     var inv = []
     for (let i = 0; i < items.length; i++) {
-        inv.push([items[i].item.id, items[i].hand])
+        inv.push([items[i].item.id, items[i].hand, items[i].atkreq])
     }
     var equipped = []
     if (main != null) {
-        equipped.push([main.item.id, main.hand])
+        equipped.push([main.item.id, main.hand, main.atkreq])
     } else {
         equipped.push([])
     }
     if (offhand != null) {
-        equipped.push(offhand.item.id)
+        equipped.push([offhand.item.id, offhand.atkreq])
     } else {
-        equipped.push("")
+        equipped.push([])
     }
     localStorage.setItem('inv', JSON.stringify(inv))
     localStorage.setItem('str', JSON.stringify(str))

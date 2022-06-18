@@ -41,7 +41,7 @@
           var items = []
           var inv = JSON.parse(localStorage.getItem("inv"))
           for (let i = 0; i < inv.length; i++) {
-            items.push(new Item(inv[i][0], inv[i][1]))
+            items.push(new Item(inv[i][0], inv[i][1], inv[i][2]))
           }
         } else {
           var items = [];
