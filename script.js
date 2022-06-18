@@ -131,7 +131,6 @@ function loop() {
             }
             else {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
-                hit = 400
                 if (main != null) {
                     if (main.item.id == "rune_claw") {
                         hit = Math.round(hit * 1.5);
@@ -239,7 +238,6 @@ function rollLoot() {
     if (items.length < 20) {
     var regular = Math.floor(Math.random() * 20);
     var rare = Math.floor(Math.random() * 1000);
-    regular = 0
 
     if (regular == 0) {
         var drop = Math.floor(Math.random() * 4);
