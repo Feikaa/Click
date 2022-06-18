@@ -41,7 +41,7 @@
           var items = []
           var inv = JSON.parse(localStorage.getItem("inv"))
           for (let i = 0; i < inv.length; i++) {
-            items.push(new Item(inv[i]))
+            items.push(new Item(inv[i][0], inv[i][1]))
           }
         } else {
           var items = [];
@@ -57,13 +57,8 @@
           var rune_claw_drop = false;
           var rune_hasta_drop = false;
         }
-        if (localStorage.getItem("equipped") != null) {
-          var main = JSON.parse(localStorage.getItem("equipped"))[0]
-          var offhand = JSON.parse(localStorage.getItem("equipped"))[1]
-        } else {
-          var main = null;
-          var offhand = null;
-        }
+        var main = null;
+        var offhand = null;
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
