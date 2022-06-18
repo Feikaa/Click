@@ -4,6 +4,7 @@ document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (30
 document.getElementById("strength").innerHTML = str
 document.getElementById("strengthxp").innerHTML = strxp
 document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+document.getElementById("kills").innerHTML = "Kills: " + kills
 document.getElementById('btn').addEventListener("click", () => {
     on = !on;
     iterate();
@@ -85,22 +86,22 @@ function loop() {
                     }
                 }
             }
-            var height = 130;
-            var width = 800;
-            var heighttext = height + 9;
-            var widthtext = width + 19;
+            var height = "10%";
+            var width = "65%";
+            var heighttext = "10.5%";
+            var widthtext = "65.9%";
             img.width = 50
             img.height = 50
             img.style.position = 'absolute';
-            img.style.top = height + 'px';
-            img.style.left = width + 'px';
+            img.style.top = height;
+            img.style.left = width;
             if (chance != 0) {
                 dmg.style.fontSize = "x-large";
                 dmg.style.position = 'absolute';
                 dmg.style.zIndex = 1;
                 dmg.style.color = "white";
-                dmg.style.top = heighttext + 'px';
-                dmg.style.left = widthtext + 'px';
+                dmg.style.top = heighttext;
+                dmg.style.left = widthtext;
                 dmg.style.textAlign = "center";
                 document.body.appendChild(dmg);
                 strXP()
@@ -130,7 +131,6 @@ function loop() {
             }
             else {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
-                hit = 400
                 if (main != null) {
                     if (main.item.id == "rune_claw") {
                         hit = Math.round(hit * 1.5);
@@ -153,22 +153,22 @@ function loop() {
                     }
                 }
             }
-            var height = 130;
-            var width = 800;
-            var heighttext = height + 9;
-            var widthtext = width + 19;
+            var height = "10%";
+            var width = "65%";
+            var heighttext = "10.5%";
+            var widthtext = "65.9%";
             img.width = 50
             img.height = 50
             img.style.position = 'absolute';
-            img.style.top = height + 'px';
-            img.style.left = width + 'px';
+            img.style.top = height;
+            img.style.left = width;
             if (chance != 0) {
                 dmg.style.fontSize = "x-large";
                 dmg.style.position = 'fixed';
                 dmg.style.zIndex = 1;
                 dmg.style.color = "white";
-                dmg.style.top = heighttext + 'px';
-                dmg.style.left = widthtext + 'px';
+                dmg.style.top = heighttext;
+                dmg.style.left = widthtext;
                 dmg.style.textAlign = "center";
                 document.body.appendChild(dmg);
                 $("#enemyhp").css("width",($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100) - (hit/4) + "%",100);
@@ -233,14 +233,14 @@ function flicker(){
   
   
 function rollLoot() {
+    kills++
+    document.getElementById("kills").innerHTML = "Kills: " + kills
     if (items.length < 20) {
     var regular = Math.floor(Math.random() * 20);
     var rare = Math.floor(Math.random() * 1000);
-    regular = 0
 
     if (regular == 0) {
         var drop = Math.floor(Math.random() * 4);
-        
         if (drop == 0 && !rune_scim_drop) {
             const alert = document.createElement('p');
             alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
@@ -338,6 +338,9 @@ function loadHands() {
           equipOff(new Item(toEquip[1], "off"))
         }
       }
+    if (localStorage.getItem("hp") != null) {
+        $("#enemyhp").css("width",(localStorage.getItem("hp") / $("#enemyhp").offsetParent().width() * 100) + "%",100);
+    }
 }
 
 function save() {
@@ -365,4 +368,6 @@ function save() {
     localStorage.setItem('atkxp_calc', JSON.stringify(atkxp_calc))
     localStorage.setItem('rune_drops', JSON.stringify([rune_scim_drop, rune_defender_drop, rune_claw_drop, rune_hasta_drop]))
     localStorage.setItem('equipped', JSON.stringify(equipped))
+    localStorage.setItem('hp', JSON.stringify($("#enemyhp").width()))
+    localStorage.setItem('kills', JSON.stringify(kills))
 }

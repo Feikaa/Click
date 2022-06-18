@@ -59,17 +59,24 @@
         }
         var main = null;
         var offhand = null;
+        if (localStorage.getItem("kills") != null) {
+          var kills = JSON.parse(localStorage.getItem("kills"))
+        } else {
+          var kills = 0
+        }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
+  <button type="button" onclick="localStorage.clear(); location.reload()" style="position: absolute; top: 0px; right: 0px;">Reset</button>
     <div class="centered">
+      <br>
         <h1>RuneIdle</h1>   
-        <button type="button" onclick="localStorage.clear(); location.reload()">Reset</button>
+        <p>Enemy HP</p>
         <div class="meter green nostripes" style="width:500px">
           <span style="width:100%" id="enemyhp"></span>
         </div>
-        <p>Enemy HP</p>
+        <p id="kills">Kills: </p>
         <br>
         <p>Attack Lvl: <span id="attack"></span></p>
         <div id='xp-bar' class="tooltip">
