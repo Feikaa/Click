@@ -70,11 +70,6 @@ function iterate() {
 
 function loop() {
     if (on) {
-        // if (checkbox.checked) {
-        //     strbonus = 1
-        // } else {
-        //     atkbonus = 1
-        // }
         atktemp = atk + atkbonus
         strtemp = str + strbonus
         if (atkbonus > 0) {
@@ -94,19 +89,21 @@ function loop() {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
                 if (main != null) {
                     if (main.item.id == "rune_claw") {
-                        hit = Math.round(hit * 1.5);
+                        hit = Math.round(hit * 1.2);
                     } else if (main.item.id == "rune_hasta") {
                         hit = Math.round(hit / 4)
                     }
                 }
                 dmg.innerHTML = Math.round(hit / 4);
                 img.src = "Damage_hitsplat.png"
-                strxp += hit
-                strxp_calc += hit
-                document.getElementById("strengthxp").innerHTML = strxp
-                document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+                if (str < 99) {
+                    strxp += hit
+                    strxp_calc += hit
+                    document.getElementById("strengthxp").innerHTML = strxp
+                    document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+                }
                 if (main != null) {
-                    if (main.item.id == "rune_hasta") {
+                    if (main.item.id == "rune_hasta" && atk < 99) {
                         atkxp += hit
                         atkxp_calc += hit
                         document.getElementById("attackxp").innerHTML = atkxp
@@ -166,19 +163,21 @@ function loop() {
                 var hit = Math.round(Math.random() * strtemp + 1) * 4
                 if (main != null) {
                     if (main.item.id == "rune_claw") {
-                        hit = Math.round(hit * 1.5);
+                        hit = Math.round(hit * 1.2);
                     } else if (main.item.id == "rune_hasta") {
                         hit = Math.round(hit / 4)
                     }
                 }
                 dmg.innerHTML = Math.round(hit / 4);
                 img.src = "Damage_hitsplat.png"
-                atkxp += hit
-                atkxp_calc += hit
-                document.getElementById("attackxp").innerHTML = atkxp
-                document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+                if (atk < 99) {
+                    atkxp += hit
+                    atkxp_calc += hit
+                    document.getElementById("attackxp").innerHTML = atkxp
+                    document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+                }
                 if (main != null) {
-                    if (main.item.id == "rune_hasta") {
+                    if (main.item.id == "rune_hasta" && str < 99) {
                         strxp += hit
                         strxp_calc += hit
                         document.getElementById("strengthxp").innerHTML = strxp
@@ -276,7 +275,6 @@ function rollLoot() {
     if (items.length < 20) {
     var regular = Math.floor(Math.random() * 20);
     var rare = Math.floor(Math.random() * 1000);
-    regular = 0
 
     if (regular == 0) {
         var drop = Math.floor(Math.random() * 4);
