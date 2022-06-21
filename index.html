@@ -7,6 +7,7 @@
     <title>RuneIdle</title>
     <link href="style.css" rel="stylesheet" type="text/css">
     <script src="./Item.js"></script>
+    <script src="./Area.js"></script>
     <script>
         var on = false;
         if (localStorage.getItem("atk") != null) {
@@ -64,11 +65,19 @@
         } else {
           var kills = 0
         }
+        var area1 = new Area("Lumbridge", 1, 200)
+        var area2 = new Area("Desert", 15, 200)
+        var area3 = new Area("Falador", 30, 300)
+        var area4 = new Area("Arougne", 45, 400)
+        var area5 = new Area("Edgeville Dungeon", 60, 500)
+        var area6 = new Area("Wilderness", 75, 600)
+        var area7 = new Area("Mor Ul Rek", 99, 2000)
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
   <button type="button" onclick="localStorage.clear(); location.reload()" style="position: absolute; top: 0px; right: 0px;">Reset</button>
+  <a class="arrow right"></a>
     <div class="centered">
       <br>
         <h1>RuneIdle</h1>   

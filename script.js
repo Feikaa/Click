@@ -12,10 +12,13 @@ document.getElementById('btn').addEventListener("click", () => {
 document.getElementById("attackstyle").addEventListener("change", () => {
     changestyle();
 })
+var currentArea;
+setCurrentArea();
 loadHands();
 updateInv();
 strXP();
 atkXP();
+var level = (atk + str) / 2
 var checkbox = document.getElementById("attackstyle")
 
 function changestyle() {
@@ -111,10 +114,15 @@ function loop() {
                     }
                 }
                 setTimeout(() => document.body.removeChild(dmg), 1000)
-                $("#enemyhp").css("width",($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100) - (hit/4) + "%",100);
-                if ($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100 <= 0) {
+                var total = currentArea.hp;
+                var value = currentArea.currentHp;
+                var newValue = value - (hit/4)
+                $("#enemyhp").css("width",(newValue / total) * 100 + "%",100);
+                currentArea.currentHp = newValue
+                if ((newValue / total) * 100 <= 0) {
                     rollLoot();
                     $("#enemyhp").css("width","100%",100);
+                    currentArea.currentHp = currentArea.hp
                 }
             }
 
@@ -171,7 +179,6 @@ function loop() {
                 dmg.style.left = widthtext;
                 dmg.style.textAlign = "center";
                 document.body.appendChild(dmg);
-                $("#enemyhp").css("width",($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100) - (hit/4) + "%",100);
                 atkXP()
                 if (main != null) {
                     if (main.item.id == "rune_hasta") {
@@ -179,9 +186,15 @@ function loop() {
                     }
                 }
                 setTimeout(() => document.body.removeChild(dmg), 1000)  
-                if ($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100 <= 0) {
+                var total = currentArea.hp;
+                var value = currentArea.currentHp;
+                var newValue = value - (hit/4)
+                $("#enemyhp").css("width",(newValue / total) * 100 + "%",100);
+                currentArea.currentHp = newValue
+                if ((newValue / total) * 100 <= 0) {
                     rollLoot();
                     $("#enemyhp").css("width","100%",100);
+                    currentArea.currentHp = currentArea.hp
                 }
             }
 
@@ -328,6 +341,25 @@ function equipOff(item) {
     item.item.style.left = '60px';
 }
 
+function setCurrentArea() {
+    var combat = (str + atk) / 2;
+    if (combat < 15) {
+        currentArea = area1
+    } else if (combat < 30) {
+        currentArea = area2
+    } else if (combat < 45) {
+        currentArea = area3
+    } else if (combat < 60) {
+        currentArea = area4
+    } else if (combat < 75) {
+        currentArea = area5
+    } else if (combat < 99) {
+        currentArea = area6
+    } else {
+        currentArea = area7
+    }
+}
+
 function loadHands() {
     if (localStorage.getItem("equipped") != null) {
         var toEquip = JSON.parse(localStorage.getItem("equipped"))
@@ -339,7 +371,9 @@ function loadHands() {
         }
       }
     if (localStorage.getItem("hp") != null) {
-        $("#enemyhp").css("width",(localStorage.getItem("hp") / $("#enemyhp").offsetParent().width() * 100) + "%",100);
+        console.log((JSON.parse(localStorage.getItem("hp"))))
+        $("#enemyhp").css("width",(JSON.parse(localStorage.getItem("hp")) / currentArea.hp * 100) + "%",100);
+        currentArea.currentHp = JSON.parse(localStorage.getItem("hp"))
     }
 }
 
@@ -368,6 +402,6 @@ function save() {
     localStorage.setItem('atkxp_calc', JSON.stringify(atkxp_calc))
     localStorage.setItem('rune_drops', JSON.stringify([rune_scim_drop, rune_defender_drop, rune_claw_drop, rune_hasta_drop]))
     localStorage.setItem('equipped', JSON.stringify(equipped))
-    localStorage.setItem('hp', JSON.stringify($("#enemyhp").width()))
+    localStorage.setItem('hp', JSON.stringify(currentArea.currentHp))
     localStorage.setItem('kills', JSON.stringify(kills))
 }
