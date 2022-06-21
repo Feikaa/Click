@@ -50,6 +50,16 @@ class Item {
                     }
                 }
                 updateInv();
+                if (atkbonus > 0) {
+                    document.getElementById("atkbonus").innerHTML = " +" + atkbonus
+                } else {
+                    document.getElementById("atkbonus").innerHTML = ""
+                }
+                if (strbonus > 0) {
+                    document.getElementById("strbonus").innerHTML = " +" + strbonus
+                } else {
+                    document.getElementById("strbonus").innerHTML = ""
+                }
             } else {
                 const alert = document.createElement('p');
                 alert.innerHTML = "<p style='text-align: left;'>Cannot equip this weapon. Requires: " + atkr + " Attack.</p>"

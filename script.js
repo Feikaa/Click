@@ -13,6 +13,8 @@ document.getElementById("attackstyle").addEventListener("change", () => {
     changestyle();
 })
 var currentArea;
+var atkbonus = 0;
+var strbonus = 0;
 setCurrentArea();
 loadHands();
 updateInv();
@@ -20,12 +22,38 @@ strXP();
 atkXP();
 var level = (atk + str) / 2
 var checkbox = document.getElementById("attackstyle")
+if (checkbox.checked) {
+    atkbonus += 1
+} else {
+    strbonus += 1
+}
+changestyle();
 
 function changestyle() {
     if (checkbox.checked) {
         document.getElementById("attackstyletext").innerHTML = "Strength"
+        strbonus += 1;
+        if (atkbonus > 0) {
+            atkbonus -= 1;
+        }
+        document.getElementById("strbonus").innerHTML = " +" + strbonus
+        if (atkbonus > 0) {
+            document.getElementById("atkbonus").innerHTML = " +" + atkbonus
+        } else {
+            document.getElementById("atkbonus").innerHTML = ""
+        }
     } else {
         document.getElementById("attackstyletext").innerHTML = "Attack"
+        atkbonus += 1;
+        if (strbonus > 0) {
+            strbonus -= 1;
+        }
+        document.getElementById("atkbonus").innerHTML = " +" + atkbonus
+        if (strbonus > 0) {
+            document.getElementById("strbonus").innerHTML = " +" + strbonus
+        } else {
+            document.getElementById("strbonus").innerHTML = ""
+        }
     }
 }
 
@@ -42,21 +70,18 @@ function iterate() {
 
 function loop() {
     if (on) {
-        atktemp = atk
-        if (offhand != null) {
-            if (offhand.item.id == "rune_def") {
-                atktemp += 3
-            }
+        // if (checkbox.checked) {
+        //     strbonus = 1
+        // } else {
+        //     atkbonus = 1
+        // }
+        atktemp = atk + atkbonus
+        strtemp = str + strbonus
+        if (atkbonus > 0) {
+            document.getElementById("atkbonus").innerHTML = " +" + atkbonus
         }
-        strtemp = str
-        if (main != null) {
-            if (main.item.id == "rune_scim") {
-                strtemp += 3
-            }
-            else if (main.item.id == "rune_hasta") {
-                atktemp += 1
-                strtemp += 1
-            }
+        if (strbonus > 0) {
+            document.getElementById("strbonus").innerHTML = " +" + strbonus
         }
         if (checkbox.checked) {
             const dmg = document.createElement("div");
@@ -251,6 +276,7 @@ function rollLoot() {
     if (items.length < 20) {
     var regular = Math.floor(Math.random() * 20);
     var rare = Math.floor(Math.random() * 1000);
+    regular = 0
 
     if (regular == 0) {
         var drop = Math.floor(Math.random() * 4);
@@ -308,6 +334,12 @@ function updateInv() {
 function unequipMain() {
     if (main != null) {
         items.push(main);
+        if (main.item.id == "rune_scim") {
+            strbonus -= 3;
+        } else if (main.item.id == "rune_hasta") {
+            atkbonus -= 1;
+            strbonus -= 1;
+        }
         main = null;
     }
 }
@@ -315,6 +347,9 @@ function unequipMain() {
 function unequipOff() {
     if (offhand != null) {
         items.push(offhand);
+        if (offhand.item.id == "rune_def") {
+            atkbonus -= 3;
+        }
         offhand = null;
     }
 }
@@ -325,6 +360,12 @@ function equip(item) {
         items.splice(items.indexOf(item), 1)
     }
     document.body.appendChild(item.item)
+    if (item.item.id == "rune_scim") {
+        strbonus += 3;
+    } else if (item.item.id == "rune_hasta") {
+        atkbonus += 1;
+        strbonus += 1;
+    }
     item.hover.innerHTML = "Unequip"
     item.item.style.top = '0px';
     item.item.style.left = '0px';
@@ -336,6 +377,9 @@ function equipOff(item) {
         items.splice(items.indexOf(item), 1)
     }
     document.body.appendChild(item.item)
+    if (item.item.id == "rune_def") {
+        atkbonus += 3;
+    }
     item.hover.innerHTML = "Unequip"
     item.item.style.top = '0px';
     item.item.style.left = '60px';
@@ -371,7 +415,6 @@ function loadHands() {
         }
       }
     if (localStorage.getItem("hp") != null) {
-        console.log((JSON.parse(localStorage.getItem("hp"))))
         $("#enemyhp").css("width",(JSON.parse(localStorage.getItem("hp")) / currentArea.hp * 100) + "%",100);
         currentArea.currentHp = JSON.parse(localStorage.getItem("hp"))
     }
