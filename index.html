@@ -66,28 +66,35 @@
           var kills = 0
         }
         var area1 = new Area("Lumbridge", 1, 100)
+        area1.locked = false;
         var area2 = new Area("Desert", 15, 200)
         var area3 = new Area("Falador", 30, 300)
-        var area4 = new Area("Arougne", 45, 400)
+        var area4 = new Area("Ardougne", 45, 400)
         var area5 = new Area("Edgeville Dungeon", 60, 500)
         var area6 = new Area("Wilderness", 75, 600)
         var area7 = new Area("Mor Ul Rek", 99, 2000)
+        var areas = [area1, area2, area3, area4, area5, area6, area7]
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 <body>
   <button type="button" onclick="localStorage.clear(); location.reload()" style="position: absolute; top: 0px; right: 0px;">Reset</button>
-  <a class="arrow right"></a>
+  <a class="arrow right" id="arrowright" onclick="changeArea('R')"></a>
+  <a class="arrow left" id="arrowleft" style="display:none" onclick="changeArea('L')"></a>
     <div class="centered">
       <br>
         <h1>RuneIdle</h1>   
-        <p>Enemy HP</p>
+        <h3>Currently in: <span id="area" style="color:#00ff00"></span></h3>
+        <p>
+        <div>Enemy HP</div>
         <div class="meter green nostripes" style="width:500px">
           <span style="width:100%" id="enemyhp"></span>
         </div>
-        <p id="kills">Kills: </p>
+        <p>Kills: <span id="kills"></span></p>
+        </p>
         <br>
-        <p>Attack Lvl: <span id="attack"></span> <span id="atkbonus" style="color:chartreuse"></span></p>
+        <p>
+        <div>Attack Lvl: <span id="attack"></span> <span id="atkbonus" style="color:chartreuse"></span></div>
         <div id='xp-bar' class="tooltip">
           <span class="tooltiptext">
             <p>Attack XP: <span id="attackxp"></span> (<span id="attackxp_diff"></span> XP left)</p>
@@ -96,7 +103,9 @@
               <div id='xp-increase-fx'><div id='xp-increase-fx-flicker'><div class='xp-increase-glow1'></div><div class='xp-increase-glow2'></div><div class='xp-increase-glow3'></div></div><div class='xp-increase-glow2'></div></div>
             </div>
           </div>
-        <p>Strength Lvl: <span id="strength"></span> <span id="strbonus" style="color:chartreuse"></span></p>
+        </p> 
+        <p>
+        <div>Strength Lvl: <span id="strength"></span> <span id="strbonus" style="color:chartreuse"></span></div>
         <div id='xp-bar' class="tooltip">
           <span class="tooltiptext">
             <p>Strength XP: <span id="strengthxp"></span> (<span id="strengthxp_diff"></span> XP left)</p>
@@ -105,6 +114,7 @@
               <div id='xp-increase-fx2'><div id='xp-increase-fx-flicker2'><div class='xp-increase-glow1'></div><div class='xp-increase-glow2'></div><div class='xp-increase-glow3'></div></div><div class='xp-increase-glow2'></div></div>
             </div>
           </div>
+        </p>
           <br>
           <br>
         <button class="button" id="btn" style="font-size: 40px; text-align: center;">Attack!</button>

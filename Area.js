@@ -4,5 +4,6 @@ class Area {
         this.level = level
         this.hp = hp
         this.currentHp = hp
+        this.locked = true
     }
 }

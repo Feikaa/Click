@@ -1,10 +1,10 @@
 document.getElementById("attack").innerHTML = atk
 document.getElementById("attackxp").innerHTML = atkxp
-document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
 document.getElementById("strength").innerHTML = str
 document.getElementById("strengthxp").innerHTML = strxp
-document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
-document.getElementById("kills").innerHTML = "Kills: " + kills
+document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
+document.getElementById("kills").innerHTML = kills
 document.getElementById('btn').addEventListener("click", () => {
     on = !on;
     iterate();
@@ -12,10 +12,19 @@ document.getElementById('btn').addEventListener("click", () => {
 document.getElementById("attackstyle").addEventListener("change", () => {
     changestyle();
 })
-var currentArea;
+var currentArea = area1;
+var areaName = localStorage.getItem("area")
+for (var i = 0; i < areas.length; i++) {
+  if (areas[i].name.localeCompare(areaName) == 0) {
+    currentArea = areas[i];
+    break;
+  }
+}
+var combat = 0;
+document.getElementById("area").innerHTML = currentArea.name;
+setCurrentArea();
 var atkbonus = 0;
 var strbonus = 0;
-setCurrentArea();
 loadHands();
 updateInv();
 strXP();
@@ -28,6 +37,7 @@ if (checkbox.checked) {
     strbonus += 1
 }
 changestyle();
+checkLevel();
 
 function changestyle() {
     if (checkbox.checked) {
@@ -100,20 +110,20 @@ function loop() {
                     strxp += hit
                     strxp_calc += hit
                     document.getElementById("strengthxp").innerHTML = strxp
-                    document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+                    document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
                 }
                 if (main != null) {
                     if (main.item.id == "rune_hasta" && atk < 99) {
                         atkxp += hit
                         atkxp_calc += hit
                         document.getElementById("attackxp").innerHTML = atkxp
-                        document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+                        document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
                     }
                 }
             }
             var height = "10%";
             var width = "65%";
-            var heighttext = "10.5%";
+            var heighttext = "11.5%";
             var widthtext = "65.9%";
             img.width = 50
             img.height = 50
@@ -174,20 +184,20 @@ function loop() {
                     atkxp += hit
                     atkxp_calc += hit
                     document.getElementById("attackxp").innerHTML = atkxp
-                    document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+                    document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
                 }
                 if (main != null) {
                     if (main.item.id == "rune_hasta" && str < 99) {
                         strxp += hit
                         strxp_calc += hit
                         document.getElementById("strengthxp").innerHTML = strxp
-                        document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+                        document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
                     }
                 }
             }
             var height = "10%";
             var width = "65%";
-            var heighttext = "10.5%";
+            var heighttext = "11.5%";
             var widthtext = "65.9%";
             img.width = 50
             img.height = 50
@@ -196,7 +206,7 @@ function loop() {
             img.style.left = width;
             if (chance != 0) {
                 dmg.style.fontSize = "x-large";
-                dmg.style.position = 'fixed';
+                dmg.style.position = 'absolute';
                 dmg.style.zIndex = 1;
                 dmg.style.color = "white";
                 dmg.style.top = heighttext;
@@ -230,14 +240,15 @@ function loop() {
             atk += 1
             document.getElementById("attack").innerHTML = atk
             atkxp_calc = 0
-            document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+            document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
         }
         if (strxp_calc >= (1/4 * Math.floor(str + 300 * (Math.pow(2, (str) / 7))))) {
             str += 1
             document.getElementById("strength").innerHTML = str
             strxp_calc = 0
-            document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+            document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
         }
+        checkLevel();
         save()
         setTimeout(loop, 1200)
     }
@@ -271,51 +282,50 @@ function flicker(){
   
 function rollLoot() {
     kills++
-    document.getElementById("kills").innerHTML = "Kills: " + kills
+    document.getElementById("kills").innerHTML = kills
     if (items.length < 20) {
-    var regular = Math.floor(Math.random() * 20);
-    var rare = Math.floor(Math.random() * 1000);
+        var regular = Math.floor(Math.random() * 20);
 
-    if (regular == 0) {
-        var drop = Math.floor(Math.random() * 4);
-        if (drop == 0 && !rune_scim_drop) {
-            const alert = document.createElement('p');
-            alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
-            document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_scim", "main", 20));
-            updateInv();
-            rune_scim_drop = true;
-        }
-        else if (drop == 1 && !rune_defender_drop) {
-            const alert = document.createElement('p');
-            alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Defender</p>"
-            document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_def", "off", 20));
-            updateInv();
-            rune_defender_drop = true;
-        }
-        else if (drop == 2 && !rune_claw_drop) {
-            const alert = document.createElement('p');
-            alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Claws</p>"
-            document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_claw", "both", 40));
-            updateInv();
-            rune_claw_drop = true;
-        }
-        else if (drop == 3 && !rune_hasta_drop) {
-            const alert = document.createElement('p');
-            alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Hasta</p>"
-            document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
-            items.push(new Item("rune_hasta", "main", 30));
-            updateInv();
-            rune_hasta_drop = true;
+        if (regular == 0) {
+            var drop = Math.floor(Math.random() * 4);
+            if (drop == 0 && !rune_scim_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_scim", "main", 20));
+                updateInv();
+                rune_scim_drop = true;
+            }
+            else if (drop == 1 && !rune_defender_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Defender</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_def", "off", 20));
+                updateInv();
+                rune_defender_drop = true;
+            }
+            else if (drop == 2 && !rune_claw_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Claws</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_claw", "both", 40));
+                updateInv();
+                rune_claw_drop = true;
+            }
+            else if (drop == 3 && !rune_hasta_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Hasta</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_hasta", "main", 30));
+                updateInv();
+                rune_hasta_drop = true;
+            }
         }
     }
-}
 }
 
 function updateInv() {
@@ -384,22 +394,61 @@ function equipOff(item) {
 }
 
 function setCurrentArea() {
-    var combat = (str + atk) / 2;
-    if (combat < 15) {
-        currentArea = area1
-    } else if (combat < 30) {
-        currentArea = area2
-    } else if (combat < 45) {
-        currentArea = area3
-    } else if (combat < 60) {
-        currentArea = area4
-    } else if (combat < 75) {
-        currentArea = area5
-    } else if (combat < 99) {
-        currentArea = area6
+    if (currentArea == area1) {
+        document.getElementById("area").style.color = "#00ff00"
+    } else if (currentArea == area2) {
+        document.getElementById("area").style.color = "#ccff33"
+    } else if (currentArea == area3) {
+        document.getElementById("area").style.color = "#ffcc00"
+    } else if (currentArea == area4) {
+        document.getElementById("area").style.color = "#ffcc00"
+    } else if (currentArea == area5) {
+        document.getElementById("area").style.color = "#ff6600"
+    } else if (currentArea == area6) {
+        document.getElementById("area").style.color = "#ff3300"
     } else {
-        currentArea = area7
+        document.getElementById("area").style.color = "red"
     }
+    document.getElementById("area").innerHTML = currentArea.name
+    if (currentArea.name == "Lumbridge") {
+        document.getElementById("arrowleft").style.display = "none";
+    } else {
+        document.getElementById("arrowleft").style.display = "inline-block"
+    }
+    if (currentArea.name == "Mor Ul Rek") {
+        document.getElementById("arrowright").style.display = "none";
+    } else {
+        document.getElementById("arrowright").style.display = "inline-block"
+    }
+}
+
+function checkLevel() {
+    combat = 50;
+    for (var i = 0; i < areas.length; i++) {
+        if (combat >= areas[i].level && areas[i].locked) {
+            const alert = document.createElement('p');
+            alert.innerHTML = "<p style='text-align: left;'>Unlocked a new area: " + areas[i].name + "</p>"
+            document.getElementById('chatbox').appendChild(alert);
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+            areas[i].locked = false
+        }
+    }
+}
+
+function changeArea(dir) {
+    var areaIndex = areas.indexOf(currentArea);
+    if (dir == "R") {
+        if (!areas[areaIndex + 1].locked) {
+            currentArea = areas[areaIndex + 1]
+            $("#enemyhp").css("width",(currentArea.currentHp / currentArea.hp * 100) + "%",100);
+        }
+    } else {
+        if (!areas[areaIndex - 1].locked) {
+            currentArea = areas[areaIndex - 1]
+            $("#enemyhp").css("width",(currentArea.currentHp / currentArea.hp * 100) + "%",100);
+        }
+    }
+    setCurrentArea();
 }
 
 function loadHands() {
@@ -445,4 +494,5 @@ function save() {
     localStorage.setItem('equipped', JSON.stringify(equipped))
     localStorage.setItem('hp', JSON.stringify(currentArea.currentHp))
     localStorage.setItem('kills', JSON.stringify(kills))
+    localStorage.setItem('area', currentArea.name)
 }
