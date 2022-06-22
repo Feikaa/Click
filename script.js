@@ -423,7 +423,7 @@ function setCurrentArea() {
 }
 
 function checkLevel() {
-    combat = 50;
+    combat = (str + atk) / 2;
     for (var i = 0; i < areas.length; i++) {
         if (combat >= areas[i].level && areas[i].locked) {
             const alert = document.createElement('p');
