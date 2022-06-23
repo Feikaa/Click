@@ -2,65 +2,135 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RuneScuffed</title>
-  <link href="style.css" rel="stylesheet" type="text/css">
-  <script>
-    var on = false;
-    var atk = 1;
-    var atkxp = 0;
-    var atkxp_calc = 0;
-    var str = 1;
-    var strxp = 0;
-    var strxp_calc = 0;
-    var items = [];
-    var rune_scim_drop = false;
-    var main = null;
-    var offhand = null;
-  </script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuneScuffed</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="./Item.js"></script>
+    <script src="./Area.js"></script>
+    <script>
+        var on = false;
+        if (localStorage.getItem("atk") != null) {
+          var atk = JSON.parse(localStorage.getItem('atk'))
+          var atktemp = atk
+        } else {
+          var atk = 1;
+          var atktemp = 1;
+        }
+        if (localStorage.getItem("atkxp") != null) {
+          var atkxp = JSON.parse(localStorage.getItem("atkxp"))
+          var atkxp_calc = JSON.parse(localStorage.getItem("atkxp_calc"))
+        } else {
+          var atkxp = 0;
+          var atkxp_calc = 0;
+        }
+        if (localStorage.getItem("str") != null) {
+          var str = JSON.parse(localStorage.getItem("str"))
+          var strtemp = str
+        } else {
+          var str = 1;
+          var strtemp = 1;
+        }
+        if (localStorage.getItem("strxp") != null) {
+          var strxp = JSON.parse(localStorage.getItem("strxp"))
+          var strxp_calc = JSON.parse(localStorage.getItem("strxp_calc"))
+        } else {
+          var strxp = 0;
+          var strxp_calc = 0;
+        }
+        if (localStorage.getItem("inv") != null) {
+          var items = []
+          var inv = JSON.parse(localStorage.getItem("inv"))
+          for (let i = 0; i < inv.length; i++) {
+            items.push(new Item(inv[i][0], inv[i][1], inv[i][2]))
+          }
+        } else {
+          var items = [];
+        }
+        if (localStorage.getItem("rune_drops") != null) {
+          var rune_scim_drop = JSON.parse(localStorage.getItem("rune_drops"))[0]
+          var rune_defender_drop = JSON.parse(localStorage.getItem("rune_drops"))[1]
+          var rune_claw_drop = JSON.parse(localStorage.getItem("rune_drops"))[2]
+          var rune_hasta_drop = JSON.parse(localStorage.getItem("rune_drops"))[3]
+        } else {
+          var rune_scim_drop = false;
+          var rune_defender_drop = false;
+          var rune_claw_drop = false;
+          var rune_hasta_drop = false;
+        }
+        var main = null;
+        var offhand = null;
+        if (localStorage.getItem("kills") != null) {
+          var kills = JSON.parse(localStorage.getItem("kills"))
+        } else {
+          var kills = 0
+        }
+        var area1 = new Area("Lumbridge", 1, 100)
+        area1.locked = false;
+        var area2 = new Area("Desert", 15, 200)
+        var area3 = new Area("Falador", 30, 300)
+        var area4 = new Area("Ardougne", 45, 400)
+        var area5 = new Area("Edgeville Dungeon", 60, 500)
+        var area6 = new Area("Wilderness", 75, 600)
+        var area7 = new Area("Mor Ul Rek", 99, 2000)
+        var areas = [area1, area2, area3, area4, area5, area6, area7]
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 </head>
 
 <body>
-  <div class="centered">
-    <h1>RuneIdle</h1>
-    <div class="meter green nostripes" style="width:500px">
-      <span style="width:100%" id="enemyhp"></span>
-    </div>
-    <p>Enemy HP</p>
-    <br>
-    <p>Attack Lvl: <span id="attack"></span></p>
-    <div id='xp-bar' class="tooltip">
-      <span class="tooltiptext">
-        <p>Attack XP: <span id="attackxp"></span> (<span id="attackxp_diff"></span> XP left)</p>
-      </span>
-      <div id='xp-bar-fill'>
-        <div id='xp-increase-fx'>
-          <div id='xp-increase-fx-flicker'>
-            <div class='xp-increase-glow1'></div>
-            <div class='xp-increase-glow2'></div>
-            <div class='xp-increase-glow3'></div>
-          </div>
-          <div class='xp-increase-glow2'></div>
+  <button type="button" onclick="localStorage.clear(); location.reload()" style="position: absolute; top: 0px; right: 0px;">Reset</button>
+  <a class="arrow right" id="arrowright" onclick="changeArea('R')"></a>
+  <a class="arrow left" id="arrowleft" style="display:none" onclick="changeArea('L')"></a>
+    <div class="centered">
+      <br>
+        <h1>RuneScuffed</h1>   
+        <h3>Currently in: <span id="area" style="color:#00ff00"></span></h3>
+        <p>
+        <div>Enemy HP</div>
+        <div class="meter green nostripes" style="width:500px">
+          <span style="width:100%" id="enemyhp"></span>
         </div>
-      </div>
-    </div>
-    <p>Strength Lvl: <span id="strength"></span></p>
-    <div id='xp-bar' class="tooltip">
-      <span class="tooltiptext">
-        <p>Strength XP: <span id="strengthxp"></span> (<span id="strengthxp_diff"></span> XP left)</p>
-      </span>
-      <div id='xp-bar-fill2'>
-        <div id='xp-increase-fx2'>
-          <div id='xp-increase-fx-flicker2'>
-            <div class='xp-increase-glow1'></div>
-            <div class='xp-increase-glow2'></div>
-            <div class='xp-increase-glow3'></div>
+        <p>Kills: <span id="kills"></span></p>
+        </p>
+        <br>
+        <p>
+        <div>Attack Lvl: <span id="attack"></span> <span id="atkbonus" style="color:chartreuse"></span></div>
+        <div id='xp-bar' class="tooltip">
+          <span class="tooltiptext">
+            <p>Attack XP: <span id="attackxp"></span> (<span id="attackxp_diff"></span> XP left)</p>
+          </span>
+            <div id='xp-bar-fill'>
+              <div id='xp-increase-fx'><div id='xp-increase-fx-flicker'><div class='xp-increase-glow1'></div><div class='xp-increase-glow2'></div><div class='xp-increase-glow3'></div></div><div class='xp-increase-glow2'></div></div>
+            </div>
           </div>
-          <div class='xp-increase-glow2'></div>
-        </div>
+        </p> 
+        <p>
+        <div>Strength Lvl: <span id="strength"></span> <span id="strbonus" style="color:chartreuse"></span></div>
+        <div id='xp-bar' class="tooltip">
+          <span class="tooltiptext">
+            <p>Strength XP: <span id="strengthxp"></span> (<span id="strengthxp_diff"></span> XP left)</p>
+          </span>
+            <div id='xp-bar-fill2'>
+              <div id='xp-increase-fx2'><div id='xp-increase-fx-flicker2'><div class='xp-increase-glow1'></div><div class='xp-increase-glow2'></div><div class='xp-increase-glow3'></div></div><div class='xp-increase-glow2'></div></div>
+            </div>
+          </div>
+        </p>
+          <br>
+          <br>
+        <button class="button" id="btn" style="font-size: 40px; text-align: center;">Attack!</button>
+        <div class="chatbox" id="chatbox"></div>
+        <div class="inventory" id="inventory"></div>
+        <br>
+        <br>
+
+        <label class="switch">
+            <input type="checkbox" id="attackstyle">
+            <span class="slider round"></span>
+        </label>
+        <br>
+        <div id="attackstyletext">Attack</div>
       </div>
     </div>
     <br>
@@ -78,11 +148,7 @@
     <br>
     <div id="attackstyletext">Attack</div>
 
-  </div>
-
-  <script src="./script.js"></script>
-  <script src="./attacking.js"></script>
-
+    <script src="./script.js"></script>
 </body>
 
 </html>

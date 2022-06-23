@@ -1,26 +1,70 @@
 document.getElementById("attack").innerHTML = atk
 document.getElementById("attackxp").innerHTML = atkxp
-document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
 document.getElementById("strength").innerHTML = str
 document.getElementById("strengthxp").innerHTML = strxp
-document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
+document.getElementById("kills").innerHTML = kills
 document.getElementById('btn').addEventListener("click", () => {
     on = !on;
     iterate();
-})
+}, {once: true})
 document.getElementById("attackstyle").addEventListener("change", () => {
     changestyle();
-    iterate();
 })
+var currentArea = area1;
+var areaName = localStorage.getItem("area")
+for (var i = 0; i < areas.length; i++) {
+  if (areas[i].name.localeCompare(areaName) == 0) {
+    currentArea = areas[i];
+    break;
+  }
+}
+var combat = 0;
+document.getElementById("area").innerHTML = currentArea.name;
+setCurrentArea();
+var atkbonus = 0;
+var strbonus = 0;
+loadHands();
+updateInv();
+strXP();
+atkXP();
+var level = (atk + str) / 2
 var checkbox = document.getElementById("attackstyle")
+if (checkbox.checked) {
+    atkbonus += 1
+} else {
+    strbonus += 1
+}
+changestyle();
+checkLevel();
 
 function changestyle() {
     if (checkbox.checked) {
         document.getElementById("attackstyletext").innerHTML = "Strength"
+        strbonus += 1;
+        if (atkbonus > 0) {
+            atkbonus -= 1;
+        }
+        document.getElementById("strbonus").innerHTML = " +" + strbonus
+        if (atkbonus > 0) {
+            document.getElementById("atkbonus").innerHTML = " +" + atkbonus
+        } else {
+            document.getElementById("atkbonus").innerHTML = ""
+        }
     } else {
         document.getElementById("attackstyletext").innerHTML = "Attack"
+        atkbonus += 1;
+        if (strbonus > 0) {
+            strbonus -= 1;
+        }
+        document.getElementById("atkbonus").innerHTML = " +" + atkbonus
+        if (strbonus > 0) {
+            document.getElementById("strbonus").innerHTML = " +" + strbonus
+        } else {
+            document.getElementById("strbonus").innerHTML = ""
+        }
     }
-    on = false
 }
 
 function iterate() {
@@ -36,47 +80,81 @@ function iterate() {
 
 function loop() {
     if (on) {
+        atktemp = atk + atkbonus
+        strtemp = str + strbonus
+        if (atkbonus > 0) {
+            document.getElementById("atkbonus").innerHTML = " +" + atkbonus
+        }
+        if (strbonus > 0) {
+            document.getElementById("strbonus").innerHTML = " +" + strbonus
+        }
         if (checkbox.checked) {
             const dmg = document.createElement("div");
-            var chance = Math.round(Math.random() * atk)
+            var chance = Math.round(Math.random() * atktemp)
             var img = document.createElement("img");
             if (chance == 0) {
                 img.src = "0hitsplat.png"
             }
             else {
-                var hit = 400
-                dmg.innerHTML = hit / 4;
+                var hit = Math.round(Math.random() * strtemp + 1) * 4
+                if (main != null) {
+                    if (main.item.id == "rune_claw") {
+                        hit = Math.round(hit * 1.2);
+                    } else if (main.item.id == "rune_hasta") {
+                        hit = Math.round(hit / 4)
+                    }
+                }
+                dmg.innerHTML = Math.round(hit / 4);
                 img.src = "Damage_hitsplat.png"
-                strxp += hit
-                strxp_calc += hit
-                document.getElementById("strengthxp").innerHTML = strxp
-                document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
-
+                if (str < 99) {
+                    strxp += hit
+                    strxp_calc += hit
+                    document.getElementById("strengthxp").innerHTML = strxp
+                    document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
+                }
+                if (main != null) {
+                    if (main.item.id == "rune_hasta" && atk < 99) {
+                        atkxp += hit
+                        atkxp_calc += hit
+                        document.getElementById("attackxp").innerHTML = atkxp
+                        document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
+                    }
+                }
             }
-            var height = 130;
-            var width = 800;
-            var heighttext = height + 9;
-            var widthtext = width + 19;
+            var height = "10%";
+            var width = "65%";
+            var heighttext = "11.5%";
+            var widthtext = "65.9%";
             img.width = 50
             img.height = 50
             img.style.position = 'absolute';
-            img.style.top = height + 'px';
-            img.style.left = width + 'px';
+            img.style.top = height;
+            img.style.left = width;
             if (chance != 0) {
                 dmg.style.fontSize = "x-large";
                 dmg.style.position = 'absolute';
                 dmg.style.zIndex = 1;
                 dmg.style.color = "white";
-                dmg.style.top = heighttext + 'px';
-                dmg.style.left = widthtext + 'px';
+                dmg.style.top = heighttext;
+                dmg.style.left = widthtext;
                 dmg.style.textAlign = "center";
                 document.body.appendChild(dmg);
                 strXP()
+                if (main != null) {
+                    if (main.item.id == "rune_hasta") {
+                        atkXP()
+                    }
+                }
                 setTimeout(() => document.body.removeChild(dmg), 1000)
-                $("#enemyhp").css("width",($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100) - (hit/4) + "%",100);
-                if ($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100 <= 0) {
+                var total = currentArea.hp;
+                var value = currentArea.currentHp;
+                var newValue = value - (hit/4)
+                $("#enemyhp").css("width",(newValue / total) * 100 + "%",100);
+                currentArea.currentHp = newValue
+                if ((newValue / total) * 100 <= 0) {
                     rollLoot();
                     $("#enemyhp").css("width","100%",100);
+                    currentArea.currentHp = currentArea.hp
                 }
             }
 
@@ -86,44 +164,71 @@ function loop() {
 
         } else {
             const dmg = document.createElement("div");
-            var chance = Math.round(Math.random() * atk)
+            var chance = Math.round(Math.random() * atktemp)
             var img = document.createElement("img");
             if (chance == 0) {
                 img.src = "0hitsplat.png"
             }
             else {
-                var hit = Math.round(Math.random() * str + 1) * 4
-                dmg.innerHTML = hit / 4;
+                var hit = Math.round(Math.random() * strtemp + 1) * 4
+                if (main != null) {
+                    if (main.item.id == "rune_claw") {
+                        hit = Math.round(hit * 1.2);
+                    } else if (main.item.id == "rune_hasta") {
+                        hit = Math.round(hit / 4)
+                    }
+                }
+                dmg.innerHTML = Math.round(hit / 4);
                 img.src = "Damage_hitsplat.png"
-                atkxp += hit
-                atkxp_calc += hit
-                document.getElementById("attackxp").innerHTML = atkxp
-                document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc
+                if (atk < 99) {
+                    atkxp += hit
+                    atkxp_calc += hit
+                    document.getElementById("attackxp").innerHTML = atkxp
+                    document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
+                }
+                if (main != null) {
+                    if (main.item.id == "rune_hasta" && str < 99) {
+                        strxp += hit
+                        strxp_calc += hit
+                        document.getElementById("strengthxp").innerHTML = strxp
+                        document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
+                    }
+                }
             }
-            var height = 130;
-            var width = 800;
-            var heighttext = height + 9;
-            var widthtext = width + 19;
+            var height = "10%";
+            var width = "65%";
+            var heighttext = "11.5%";
+            var widthtext = "65.9%";
             img.width = 50
             img.height = 50
             img.style.position = 'absolute';
-            img.style.top = height + 'px';
-            img.style.left = width + 'px';
+            img.style.top = height;
+            img.style.left = width;
             if (chance != 0) {
                 dmg.style.fontSize = "x-large";
                 dmg.style.position = 'absolute';
                 dmg.style.zIndex = 1;
                 dmg.style.color = "white";
-                dmg.style.top = heighttext + 'px';
-                dmg.style.left = widthtext + 'px';
+                dmg.style.top = heighttext;
+                dmg.style.left = widthtext;
                 dmg.style.textAlign = "center";
                 document.body.appendChild(dmg);
-                $("#enemyhp").css("width",($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100) - (hit/4) + "%",100);
                 atkXP()
+                if (main != null) {
+                    if (main.item.id == "rune_hasta") {
+                        strXP()
+                    }
+                }
                 setTimeout(() => document.body.removeChild(dmg), 1000)  
-                if ($("#enemyhp").width() / $("#enemyhp").offsetParent().width() * 100 <= 0) {
+                var total = currentArea.hp;
+                var value = currentArea.currentHp;
+                var newValue = value - (hit/4)
+                $("#enemyhp").css("width",(newValue / total) * 100 + "%",100);
+                currentArea.currentHp = newValue
+                if ((newValue / total) * 100 <= 0) {
                     rollLoot();
                     $("#enemyhp").css("width","100%",100);
+                    currentArea.currentHp = currentArea.hp
                 }
             }
 
@@ -135,14 +240,16 @@ function loop() {
             atk += 1
             document.getElementById("attack").innerHTML = atk
             atkxp_calc = 0
-            document.getElementById("attackxp_diff").innerHTML = (1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - strxp_calc
+            document.getElementById("attackxp_diff").innerHTML = Math.floor((1/4 * Math.floor(atk + (300 * (Math.pow(2, (atk) / 7))))) - atkxp_calc)
         }
         if (strxp_calc >= (1/4 * Math.floor(str + 300 * (Math.pow(2, (str) / 7))))) {
             str += 1
             document.getElementById("strength").innerHTML = str
             strxp_calc = 0
-            document.getElementById("strengthxp_diff").innerHTML = (1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc
+            document.getElementById("strengthxp_diff").innerHTML = Math.floor((1/4 * Math.floor(str + (300 * (Math.pow(2, (str) / 7))))) - strxp_calc)
         }
+        checkLevel();
+        save()
         setTimeout(loop, 1200)
     }
 }
@@ -174,69 +281,218 @@ function flicker(){
   
   
 function rollLoot() {
-    if (items.length < 20)
-    var regular = Math.floor(Math.random() * 20);
-    var rare = Math.floor(Math.random() * 1000);
+    kills++
+    document.getElementById("kills").innerHTML = kills
+    if (items.length < 20) {
+        var regular = Math.floor(Math.random() * 20);
 
-    if (true) {
-        var drop = Math.floor(Math.random() * 4);
-        if (!rune_scim_drop) {
-            const alert = document.createElement('p');
-            alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
-            document.getElementById('chatbox').appendChild(alert);
-            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 5000)
-            const rune_scim = document.createElement('div');
-            const icon = document.createElement('img');
-            rune_scim.appendChild(icon)
-            rune_scim.className = "tooltip"
-            icon.src = "Rune_scimitar.png";
-            icon.width = 50;
-            icon.height = 50;
-            rune_scim.style.position = 'absolute';
-            rune_scim.style.top = 0 + (60 * Math.floor((items.length / 5))) + 'px';
-            rune_scim.style.left = 0 + (60 * (items.length % 5)) + 'px';    
-            rune_scim.addEventListener('click', function handleClick(event) {
-                if (main != rune_scim) {
-                    unequipMain();
-                    equip(rune_scim);
-                    updateInv();
-                } else {
-                    unequipMain();
-                    updateInv();
-                }
-            })
-            const hover = document.createElement("span")
-            hover.id = "hover";
-            hover.className = "tooltiptextnobg"
-            hover.innerHTML = "Equip"
-            hover.style.top = '20px'
-            hover.style.left = '-70px'
-            rune_scim.appendChild(hover)
-            items.push(rune_scim);
-            updateInv();
-            rune_scim_drop = true;
+        if (regular == 0) {
+            var drop = Math.floor(Math.random() * 4);
+            if (drop == 0 && !rune_scim_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Scimitar</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_scim", "main", 20));
+                updateInv();
+                rune_scim_drop = true;
+            }
+            else if (drop == 1 && !rune_defender_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Defender</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_def", "off", 20));
+                updateInv();
+                rune_defender_drop = true;
+            }
+            else if (drop == 2 && !rune_claw_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Claws</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_claw", "both", 40));
+                updateInv();
+                rune_claw_drop = true;
+            }
+            else if (drop == 3 && !rune_hasta_drop) {
+                const alert = document.createElement('p');
+                alert.innerHTML = "<p style='text-align: left;'>You got a drop: Rune Hasta</p>"
+                document.getElementById('chatbox').appendChild(alert);
+                setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+                items.push(new Item("rune_hasta", "main", 30));
+                updateInv();
+                rune_hasta_drop = true;
+            }
         }
     }
 }
 
 function updateInv() {
     document.getElementById('inventory').innerHTML = "";
-    for (const item of items) {
-        document.getElementById('inventory').appendChild(item);
-        hover.innerHTML = "Equip"
+    for (let i = 0; i < items.length; i++) {
+        items[i].item.style.top = 0 + (60 * Math.floor((i + 1) / 5)) + 'px';
+        items[i].item.style.left = 0 + (60 * (i % 5)) + 'px';    
+        document.getElementById('inventory').appendChild(items[i].item);
+        items[i].hover.innerHTML = "Equip"
+        save()
     }
 }
 
 function unequipMain() {
     if (main != null) {
         items.push(main);
+        if (main.item.id == "rune_scim") {
+            strbonus -= 3;
+        } else if (main.item.id == "rune_hasta") {
+            atkbonus -= 1;
+            strbonus -= 1;
+        }
         main = null;
+    }
+}
+
+function unequipOff() {
+    if (offhand != null) {
+        items.push(offhand);
+        if (offhand.item.id == "rune_def") {
+            atkbonus -= 3;
+        }
+        offhand = null;
     }
 }
 
 function equip(item) {
     main = item 
-    items.splice(items.indexOf(item), 1)
-    document.body.appendChild(item)
-    hover.innerHTML = "Unequip"
+    if (items.indexOf(item) != -1) {
+        items.splice(items.indexOf(item), 1)
+    }
+    document.body.appendChild(item.item)
+    if (item.item.id == "rune_scim") {
+        strbonus += 3;
+    } else if (item.item.id == "rune_hasta") {
+        atkbonus += 1;
+        strbonus += 1;
+    }
+    item.hover.innerHTML = "Unequip"
+    item.item.style.top = '0px';
+    item.item.style.left = '0px';
+}
+
+function equipOff(item) {
+    offhand = item
+    if (items.indexOf(item) != -1) {
+        items.splice(items.indexOf(item), 1)
+    }
+    document.body.appendChild(item.item)
+    if (item.item.id == "rune_def") {
+        atkbonus += 3;
+    }
+    item.hover.innerHTML = "Unequip"
+    item.item.style.top = '0px';
+    item.item.style.left = '60px';
+}
+
+function setCurrentArea() {
+    if (currentArea == area1) {
+        document.getElementById("area").style.color = "#00ff00"
+    } else if (currentArea == area2) {
+        document.getElementById("area").style.color = "#ccff33"
+    } else if (currentArea == area3) {
+        document.getElementById("area").style.color = "#ffcc00"
+    } else if (currentArea == area4) {
+        document.getElementById("area").style.color = "#ffcc00"
+    } else if (currentArea == area5) {
+        document.getElementById("area").style.color = "#ff6600"
+    } else if (currentArea == area6) {
+        document.getElementById("area").style.color = "#ff3300"
+    } else {
+        document.getElementById("area").style.color = "red"
+    }
+    document.getElementById("area").innerHTML = currentArea.name
+    if (currentArea.name == "Lumbridge") {
+        document.getElementById("arrowleft").style.display = "none";
+    } else {
+        document.getElementById("arrowleft").style.display = "inline-block"
+    }
+    if (currentArea.name == "Mor Ul Rek") {
+        document.getElementById("arrowright").style.display = "none";
+    } else {
+        document.getElementById("arrowright").style.display = "inline-block"
+    }
+}
+
+function checkLevel() {
+    combat = (str + atk) / 2;
+    for (var i = 0; i < areas.length; i++) {
+        if (combat >= areas[i].level && areas[i].locked) {
+            const alert = document.createElement('p');
+            alert.innerHTML = "<p style='text-align: left;'>Unlocked a new area: " + areas[i].name + "</p>"
+            document.getElementById('chatbox').appendChild(alert);
+            setTimeout(() => document.getElementById('chatbox').removeChild(alert), 10000)
+            areas[i].locked = false
+        }
+    }
+}
+
+function changeArea(dir) {
+    var areaIndex = areas.indexOf(currentArea);
+    if (dir == "R") {
+        if (!areas[areaIndex + 1].locked) {
+            currentArea = areas[areaIndex + 1]
+            $("#enemyhp").css("width",(currentArea.currentHp / currentArea.hp * 100) + "%",100);
+        }
+    } else {
+        if (!areas[areaIndex - 1].locked) {
+            currentArea = areas[areaIndex - 1]
+            $("#enemyhp").css("width",(currentArea.currentHp / currentArea.hp * 100) + "%",100);
+        }
+    }
+    setCurrentArea();
+}
+
+function loadHands() {
+    if (localStorage.getItem("equipped") != null) {
+        var toEquip = JSON.parse(localStorage.getItem("equipped"))
+        if (toEquip[0].length > 0) {
+          equip(new Item(toEquip[0][0], toEquip[0][1], toEquip[0][2]));
+        }
+        if (toEquip[1].length > 0) {
+          equipOff(new Item(toEquip[1][0], "off", toEquip[1][1]))
+        }
+      }
+    if (localStorage.getItem("hp") != null) {
+        $("#enemyhp").css("width",(JSON.parse(localStorage.getItem("hp")) / currentArea.hp * 100) + "%",100);
+        currentArea.currentHp = JSON.parse(localStorage.getItem("hp"))
+    }
+}
+
+function save() {
+    var inv = []
+    for (let i = 0; i < items.length; i++) {
+        inv.push([items[i].item.id, items[i].hand, items[i].atkreq])
+    }
+    var equipped = []
+    if (main != null) {
+        equipped.push([main.item.id, main.hand, main.atkreq])
+    } else {
+        equipped.push([])
+    }
+    if (offhand != null) {
+        equipped.push([offhand.item.id, offhand.atkreq])
+    } else {
+        equipped.push([])
+    }
+    localStorage.setItem('inv', JSON.stringify(inv))
+    localStorage.setItem('str', JSON.stringify(str))
+    localStorage.setItem('strxp', JSON.stringify(strxp))
+    localStorage.setItem('strxp_calc', JSON.stringify(strxp_calc))
+    localStorage.setItem('atk', JSON.stringify(atk))
+    localStorage.setItem('atkxp', JSON.stringify(atkxp))
+    localStorage.setItem('atkxp_calc', JSON.stringify(atkxp_calc))
+    localStorage.setItem('rune_drops', JSON.stringify([rune_scim_drop, rune_defender_drop, rune_claw_drop, rune_hasta_drop]))
+    localStorage.setItem('equipped', JSON.stringify(equipped))
+    localStorage.setItem('hp', JSON.stringify(currentArea.currentHp))
+    localStorage.setItem('kills', JSON.stringify(kills))
+    localStorage.setItem('area', currentArea.name)
 }
